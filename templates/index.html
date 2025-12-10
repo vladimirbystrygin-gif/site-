@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Саунд - Мессенджер</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="{% if theme == 'dark' %}dark-theme{% endif %}">
+    <header class="header">
+        <h1>Саунд</h1>
+        <button class="hamburger" onclick="toggleMenu()">&#9776;</button>
+        <nav class="nav" id="nav-menu">
+            <a href="{{ url_for('friends') }}" class="nav-link">Друзья</a>
+            <a href="{{ url_for('profile', user_id=current_user.id) }}" class="nav-link">Профиль</a>
+            <a href="{{ url_for('settings') }}" class="nav-link">Настройки</a>
+            <a href="{{ url_for('logout') }}" class="nav-link">Выйти</a>
+        </nav>
+    </header>
+    <script>
+        function toggleMenu() {
+            var nav = document.getElementById('nav-menu');
+            nav.classList.toggle('show');
+        }
+    </script>
+    <main class="main">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="flashes">
+              {% for message in messages %}
+                <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+        <section class="user-list">
+            <h2>Пользователи</h2>
+            <div class="users-container">
+                {% for user in users %}
+                <div class="user-item">
+                    <img src="{{ url_for('static', filename='uploads/' + user.avatar if user.avatar else 'images/avatar1.png') }}" alt="Аватар пользователя {{ user.username }}" class="avatar">
+                    <span class="username">{{ user.display_name or user.username }}</span>
+                    <a href="{{ url_for('chat', recipient_id=user.id) }}" class="chat-link">Открыть чат</a>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+</body>
+</html>

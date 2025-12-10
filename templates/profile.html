@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль - Саунд</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="{% if theme == 'dark' %}dark-theme{% endif %}">
+    <header class="header">
+        <h1>Саунд</h1>
+        <button class="hamburger" onclick="toggleMenu()">&#9776;</button>
+        <nav class="nav" id="nav-menu">
+            <a href="{{ url_for('friends') }}" class="nav-link">Друзья</a>
+            <a href="{{ url_for('index') }}" class="nav-link">Главная</a>
+            <a href="{{ url_for('profile', user_id=current_user.id) }}" class="nav-link">Профиль</a>
+            <a href="{{ url_for('settings') }}" class="nav-link">Настройки</a>
+            <a href="{{ url_for('logout') }}" class="nav-link">Выйти</a>
+        </nav>
+    </header>
+    <script>
+        function toggleMenu() {
+            var nav = document.getElementById('nav-menu');
+            nav.classList.toggle('show');
+        }
+    </script>
+    <main class="main">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="flashes">
+              {% for message in messages %}
+                <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+        <section class="profile-section">
+            <div class="profile-info">
+                <img src="{{ url_for('static', filename='images/' + user.avatar if user.avatar and user.username == 'sound_bot' else 'uploads/' + (user.avatar if user.avatar else 'images/avatar1.png')) }}" alt="Аватар {{ user.display_name or user.username }}" class="avatar-large">
+                <h2>{{ user.display_name or user.username }}</h2>
+                <p>ID: {{ user.id }}</p>
+            </div>
+            {% if is_owner %}
+            <form class="form profile-form" method="POST" enctype="multipart/form-data">
+                <label for="display_name">Отображаемое имя:</label>
+                <input type="text" id="display_name" name="display_name" value="{{ user.display_name }}">
+
+                <label for="bio">Био:</label>
+                <textarea id="bio" name="bio" rows="3">{{ user.bio }}</textarea>
+
+                <label for="avatar">Сменить аватарку:</label>
+                <input type="file" id="avatar" name="avatar" accept="image/*">
+
+                <button type="submit" class="button">Сохранить изменения</button>
+            </form>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат - Саунд</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="{% if theme == 'dark' %}dark-theme{% endif %}">
+    <header class="header">
+        <h1>Саунд</h1>
+        <button class="hamburger" onclick="toggleMenu()">&#9776;</button>
+        <nav class="nav" id="nav-menu">
+            <a href="{{ url_for('friends') }}" class="nav-link">Друзья</a>
+            <a href="{{ url_for('index') }}" class="nav-link">Главная</a>
+            <a href="{{ url_for('profile', user_id=current_user.id) }}" class="nav-link">Профиль</a>
+            <a href="{{ url_for('settings') }}" class="nav-link">Настройки</a>
+        </nav>
+    </header>
+    <script>
+        function toggleMenu() {
+            var nav = document.getElementById('nav-menu');
+            nav.classList.toggle('show');
+        }
+    </script>
+    <main class="main">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="flashes">
+              {% for message in messages %}
+                <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+        <section class="chat-section">
+            <div class="chat-header">
+                <img src="{{ url_for('static', filename='uploads/' + (recipient.avatar if recipient.avatar else 'images/avatar1.png')) }}" alt="Аватар {{ recipient.display_name or recipient.username }}" class="avatar">
+                <h2>{{ recipient.display_name or recipient.username }}</h2>
+            </div>
+            <div class="messages">
+                {% for message in messages %}
+                {% if message.user_id == current_user.id %}
+                <div class="message sent">
+                    <div class="message-content">{{ message.content }}</div>
+                    <img src="{{ url_for('static', filename='uploads/' + (current_user.avatar if current_user.avatar else 'images/avatar1.png')) }}" alt="Ваш аватар" class="avatar-small">
+                </div>
+                {% else %}
+                <div class="message received">
+                    <img src="{{ url_for('static', filename='images/' + (recipient.avatar if recipient.avatar and recipient.username == 'sound_bot' else 'uploads/' + (recipient.avatar if recipient.avatar else 'images/avatar1.png'))) }}" alt="Аватар {{ recipient.display_name or recipient.username }}" class="avatar-small">
+                    <div class="message-content">{{ message.content }}</div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            <form class="form send-message-form" method="POST">
+                <input type="text" id="content" name="content" placeholder="Введите сообщение..." required>
+                <button type="submit" class="button">Отправить</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
